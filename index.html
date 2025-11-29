@@ -1,264 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Sivi ❤️</title>
-
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-    body {
-        margin: 0;
-        font-family: Poppins, sans-serif;
-        background: #fdeff4;
-        color: #333;
-        overflow-x: hidden;
-    }
+  :root{
+    --pink:#ff7aa3;
+    --soft:#ffe6f0;
+    --accent:#ff3d7a;
+    --bg:#fdeff4;
+  }
 
-    /* PASSWORD SCREEN */
-    #lockScreen {
-        position: fixed;
-        inset: 0;
-        background: linear-gradient(135deg,#ffc3d9,#ffeaf2);
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-        z-index: 1000;
-        text-align: center;
-    }
+  /* Basic */
+  body{
+    margin:0;
+    font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background:var(--bg);
+    color:#222;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
 
-    #lockScreen h1 {
-        font-size: 32px;
-        color: #ff3d7a;
-        margin-bottom: 10px;
-    }
+  .centered {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+  }
 
-    #lockScreen input {
-        padding: 12px;
-        width: 240px;
-        border: 2px solid #ff9abb;
-        border-radius: 10px;
-        margin-top: 15px;
-        font-size: 16px;
-    }
+  /* LOCK SCREEN */
+  #lockScreen{
+    position:fixed; inset:0;
+    background: linear-gradient(135deg,#ffc3d9,#ffeaf2);
+    z-index:1200;
+    text-align:center;
+    padding:28px;
+  }
+  #lockScreen h1{ font-size:34px; color:var(--accent); margin:6px 0; }
+  #lockScreen p{ margin:6px 0 12px; color:#6b394a; }
+  #passInput{
+    padding:12px; width:240px; border-radius:10px; border:2px solid #ff9abb;
+    font-size:15px; outline:none;
+  }
+  #openBtn{
+    margin-top:12px; background:var(--pink); color:white; border:none;
+    padding:12px 18px; border-radius:12px; cursor:pointer; font-size:15px;
+  }
+  #wrong{ color:#c23; display:none; margin-top:10px; }
 
-    #lockScreen button {
-        margin-top: 12px;
-        background: #ff7aa3;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 12px;
-        color: white;
-        cursor: pointer;
-        font-size: 16px;
-    }
+  /* BLUR overlay (applies when a modal is open) */
+  .blur-wrap{ transition:filter .18s ease; }
+  .blurred{ filter:blur(6px) saturate(.95); pointer-events:none; user-select:none; }
 
-    /* POPUP */
-    #popup {
-        position: fixed;
-        top: 50%; left: 50%;
-        transform: translate(-50%,-50%);
-        background: #ffe6f0;
-        padding: 30px;
-        width: 80%;
-        max-width: 350px;
-        border-radius: 18px;
-        text-align: center;
-        display: none;
-        z-index: 1500;
-        animation: fadeIn .5s ease;
-    }
+  /* Popup (welcome) */
+  .popup {
+    position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:88%; max-width:380px; background:var(--soft); border-radius:16px;
+    box-shadow:0 18px 50px rgba(0,0,0,0.14); padding:22px; text-align:center;
+    z-index:2000; display:none;
+  }
+  .popup h2{ color:var(--accent); margin:6px 0; font-size:22px; }
+  .popup p{ color:#553; font-size:15px; line-height:1.45; margin:8px 0 14px; }
+  .popup button{ background:var(--pink); color:#fff; border:none; padding:10px 14px;border-radius:10px; cursor:pointer; }
 
-    #popup h2 { color: #ff3d7a; margin-bottom: 8px; }
+  /* Cake area */
+  #cakeContainer{
+    display:none;
+    padding-top:28px;
+    min-height:260px; /* prevents layout jump */
+    text-align:center;
+  }
+  .cakeBox{ width:190px; margin:0 auto; animation:popIn .9s cubic-bezier(.2,.9,.3,1); }
+  @keyframes popIn{ from{transform:scale(.78);opacity:0} to{transform:scale(1);opacity:1} }
 
-    #popup button {
-        margin-top: 15px;
-        background: #ff7aa3;
-        padding: 10px 20px;
-        border-radius: 10px;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
+  .wishText{ margin-top:12px; color:var(--accent); font-size:18px; }
 
-    @keyframes fadeIn {
-        from {opacity: 0; transform: translate(-50%,-60%);}
-        to {opacity: 1; transform: translate(-50%,-50%);}
-    }
+  /* Main content */
+  #mainPage{ display:none; max-width:680px; margin:18px auto; padding:12px; text-align:center; }
 
-    /* CAKE FIX */
-    #cakeContainer {
-        display: none;
-        text-align: center;
-        padding: 30px 0;
-        min-height: 260px;  /* prevents hug jump */
-    }
+  /* Hug card */
+  .card{ background:#fff; border-radius:14px; padding:18px; box-shadow:0 8px 26px rgba(0,0,0,0.06); margin:14px 10px; text-align:center; position:relative; overflow:visible; }
+  .hug-box{ font-size:44px; margin:8px 0 6px; }
+  .btn{ background:var(--pink); color:#fff; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-size:15px; }
+  #hugMessage{ display:none; margin-top:12px; background:#fff0f6; padding:12px; border-radius:10px; color:#6b394a; }
 
-    .cakeBox {
-        width: 180px;
-        margin: 0 auto;
-        animation: popIn .9s ease-out;
-    }
+  /* floating +s / hearts */
+  .floatPlus{ position:absolute; font-weight:600; color:var(--accent); font-size:18px; animation:floatUp 900ms ease-out forwards; pointer-events:none; }
+  @keyframes floatUp{ from{ transform:translateY(0); opacity:1} to{ transform:translateY(-48px); opacity:0 } }
 
-    @keyframes popIn {
-        from {opacity:0; transform:scale(0.6);}
-        to {opacity:1; transform:scale(1);}
-    }
+  /* Notes area (slide-in modal) */
+  .notes-trigger { margin-top:14px; }
+  #notesPanel {
+    position:fixed;
+    right:18px; bottom:18px;
+    width:320px; max-width:92%;
+    background:linear-gradient(180deg, #fff, #fff);
+    border-radius:16px; box-shadow:0 18px 50px rgba(0,0,0,0.12);
+    transform: translateY(120%); transition: transform .32s cubic-bezier(.2,.9,.3,1);
+    z-index:1600; overflow:hidden;
+  }
+  #notesPanel.open { transform: translateY(0%); } /* slide-in */
+  #notesHeader { padding:12px 14px; display:flex; justify-content:space-between; align-items:center; background:var(--soft); }
+  #notesHeader h3{ margin:0; color:var(--accent); font-size:15px; }
+  #notesBody{ padding:12px; }
+  .noteButtons { display:flex; gap:8px; margin-bottom:10px; }
+  .noteButtons button{ flex:1; padding:8px; border-radius:10px; border:1px solid #ffe0ec; background:white; cursor:pointer; font-size:14px; }
+  .noteButtons button.active{ background:var(--pink); color:white; border:none; }
 
-    .wishText {
-        font-size: 18px;
-        margin-top: 12px;
-        color: #ff3d7a;
-    }
+  .noteText {
+    min-height:60px; color:#4b2f3b; font-size:14px; line-height:1.5;
+    background:linear-gradient(180deg,#fff,#fff); padding:8px; border-radius:8px; box-shadow: inset 0 1px 0 rgba(0,0,0,0.02);
+    white-space:pre-wrap;
+  }
 
-    /* MAIN */
-    #mainPage {
-        display: none;
-        max-width: 650px;
-        margin: 0 auto;
-        padding: 20px;
-        text-align: center;
-    }
+  /* typing cursor */
+  .typing-cursor { display:inline-block; width:8px; height:14px; background:#c23; margin-left:6px; vertical-align:middle; border-radius:2px; opacity:1; animation: blink 1s steps(2,end) infinite; }
+  @keyframes blink{ 50%{opacity:0} }
 
-    /* HUG SECTION */
-    .hug-card {
-        background: white;
-        padding: 25px;
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        margin-top: 20px;
-        animation: fadeIn 1s ease;
-        position: relative;
-        overflow: visible;
-    }
+  /* Thought of you quote */
+  .thought { margin-top:14px; font-size:14px; color:#5a3a45; background:linear-gradient(90deg,#fff,#fff); padding:12px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.04); }
 
-    .hug-box {
-        font-size: 40px;
-        margin-bottom: 10px;
-    }
+  /* surprise box */
+  #surpriseBox { margin-top:12px; padding:12px; border-radius:10px; background:#fff; box-shadow:0 8px 22px rgba(0,0,0,0.06); }
+  #secretOut { display:none; margin-top:10px; color: #3b1; font-weight:600; }
 
-    #hugMessage {
-        display: none;
-        margin-top: 10px;
-        padding: 15px;
-        border-radius: 12px;
-        background: #ffe5ef;
-        font-size: 15px;
-    }
-
-    /* Floating +1 hearts */
-    .floatPlus {
-        position: absolute;
-        font-size: 20px;
-        animation: floatUp 1s ease-out forwards;
-        color: #ff3d7a;
-    }
-
-    @keyframes floatUp {
-        from {opacity:1; transform:translateY(0);}
-        to {opacity:0; transform:translateY(-40px);}
-    }
-
+  /* responsive */
+  @media (max-width:520px){
+    .cakeBox{ width:150px }
+    #notesPanel{ right:10px; left:10px; width:auto; bottom:16px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- POPUP -->
-<div id="popup">
+<!-- LOCK SCREEN -->
+<div id="lockScreen" class="centered">
+  <h1>Sivi ❤️</h1>
+  <p>Enter your password, baby.</p>
+  <input id="passInput" type="password" placeholder="Password" />
+  <button id="openBtn" onclick="unlock()">Open</button>
+  <p id="wrong">Wrong password, baby.</p>
+</div>
+
+<!-- PAGE CONTENT (will be blurred while popup or notes open) -->
+<div id="pageWrap" class="blur-wrap">
+
+  <!-- popup welcome -->
+  <div id="welcomePopup" class="popup" role="dialog" aria-hidden="true">
     <h2>Happy Birthday baby ❤️</h2>
     <p>You make my days feel lighter, and my life a little softer.<br>
-    Love U Soooo Much, baby.</p>
-    <button onclick="closePopup()">Continue</button>
-</div>
+       You're genuinely important to me, baby.</p>
+    <button onclick="closeWelcome()">Continue</button>
+  </div>
 
-<!-- PASSWORD SCREEN -->
-<div id="lockScreen">
-    <h1>Sivi ❤️</h1>
-    <p>Enter your password, baby.</p>
-    <input type="password" id="pass" placeholder="Password">
-    <button onclick="unlock()">Open</button>
-    <p id="wrong" style="color:red; display:none;">Wrong password, baby.</p>
-</div>
-
-
-<!-- CAKE -->
-<div id="cakeContainer">
+  <!-- cake (hidden until welcome closed) -->
+  <div id="cakeContainer" class="centered" aria-hidden="true">
     <div class="cakeBox">
-        <!-- GUARANTEED WORKING SVG CAKE -->
-        <svg viewBox="0 0 200 200" width="180">
-            <ellipse cx="100" cy="150" rx="60" ry="20" fill="#f8b8cc"/>
-            <rect x="40" y="80" width="120" height="70" rx="12" fill="#ffbfd3"/>
-            <rect x="80" y="40" width="40" height="40" rx="8" fill="#fff0f6"/>
-
-            <!-- Candle -->
-            <rect x="97" y="20" width="6" height="20" rx="3" fill="#ff8eb6"/>
-
-            <!-- Flame -->
-            <circle cx="100" cy="15" r="7" fill="#ffd27f">
-                <animate attributeName="opacity" values="1;0.4;1" dur="0.25s" repeatCount="indefinite"/>
-            </circle>
-        </svg>
+      <!-- reliable SVG cake -->
+      <svg viewBox="0 0 200 200" width="190" aria-hidden="true" role="img">
+        <ellipse cx="100" cy="150" rx="60" ry="20" fill="#f8b8cc"/>
+        <rect x="40" y="80" width="120" height="70" rx="12" fill="#ffbfd3"/>
+        <rect x="80" y="40" width="40" height="40" rx="8" fill="#fff0f6"/>
+        <!-- candle -->
+        <rect x="97" y="20" width="6" height="20" rx="3" fill="#ff8eb6"/>
+        <!-- flame -->
+        <circle cx="100" cy="15" r="7" fill="#ffd27f">
+          <animate attributeName="opacity" values="1;0.4;1" dur="0.28s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
     </div>
 
     <p class="wishText">Make a wish, baby 🤍</p>
-    <p style="font-size:14px; color:#555;">December 19 — your day, baby.</p>
-</div>
+    <p style="font-size:13px; color:#555; margin-top:6px">December 19 — your day, baby.</p>
+  </div>
 
+  <!-- main content -->
+  <main id="mainPage">
+    <div class="card">
+      <h2 style="color:var(--accent); margin:6px 0 10px">A hug for you, baby 🤍</h2>
+      <div class="hug-box">🤗</div>
+      <button class="btn" onclick="hug()">Tap for a hug</button>
 
-<!-- MAIN CONTENT -->
-<div id="mainPage">
-
-    <div class="hug-card">
-        <h2>A hug for you, baby 🤍</h2>
-        <div class="hug-box">🫂</div>
-        <button class="btn" onclick="hug()">Tap for a hug</button>
-
-        <div id="hugMessage">
-            A soft warm hug for you, baby.<br>
-            Miss U Always 🥺
-        </div>
+      <div id="hugMessage">A soft warm hug for you, baby. The kind you love — calm, gentle, safe.</div>
     </div>
 
+    <div class="card" style="margin-top:12px;">
+      <h3 style="margin:0 0 10px; color:#6b394a;">A small note</h3>
+      <div class="notes-trigger">
+        <button class="btn" onclick="toggleNotes()">Read messages</button>
+      </div>
+
+      <div class="thought" style="margin-top:12px;">
+        Thought of you today: <em>"Small things become softer when you are around."</em>
+      </div>
+
+      <div id="surpriseBox">
+        <label style="font-size:13px; color:#5a3a45;">Unlock a small surprise (enter code):</label><br/>
+        <input id="secretInput" placeholder="Code (e.g. 19)" style="padding:8px; margin-top:8px; width:120px; border-radius:8px; border:1px solid #ffdce8" />
+        <button class="btn" style="margin-left:8px" onclick="trySecret()">Unlock</button>
+        <div id="secretOut">✨ Surprise: Happy Birthday, baby. Love you quietly. ✨</div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- NOTES SLIDE PANEL (slide-in from bottom/right) -->
+<div id="notesPanel" aria-hidden="true">
+  <div id="notesHeader">
+    <h3>Messages for you</h3>
+    <button onclick="toggleNotes()" style="background:transparent;border:none;font-weight:600;color:var(--accent);cursor:pointer">Close</button>
+  </div>
+
+  <div id="notesBody">
+    <div class="noteButtons">
+      <button id="n1" class="active" onclick="selectNote(0)">1</button>
+      <button id="n2" onclick="selectNote(1)">2</button>
+      <button id="n3" onclick="selectNote(2)">3</button>
+    </div>
+
+    <div id="noteText" class="noteText" aria-live="polite"></div>
+  </div>
 </div>
 
 <script>
-let birthdaySong = new Audio("YOUR_AUDIO_URL.mp3");
+/* ---------- CONFIG ---------- */
+const NOTES = [
+  "I don’t say this often, but... you make my days feel calmer. Thank you for being you, baby.",
+  "You have this calm way about you that makes things better. I appreciate you quietly every day.",
+  "Small moments with you feel real. Today I’m thankful you’re in my life, baby."
+];
+const SECRET_CODE = "19"; // unlock code
 
+/* ---------- AUDIO (set your hosted mp3 link) ---------- */
+let birthdaySong = new Audio("YOUR_AUDIO_LINK_HERE.mp3"); // << replace with real hosted mp3 link
+
+/* ---------- Lock / Welcome logic ---------- */
 function unlock(){
-    if(document.getElementById("pass").value === "sivi19"){
-        document.getElementById("lockScreen").style.display="none";
-        document.getElementById("popup").style.display="block";
-    } else {
-        document.getElementById("wrong").style.display="block";
-    }
+  const pass = document.getElementById('passInput').value.trim();
+  if(pass === "sivi19"){
+    document.getElementById('lockScreen').style.display = 'none';
+    showWelcome();
+  } else {
+    const w = document.getElementById('wrong');
+    w.style.display = 'block';
+    setTimeout(()=> w.style.display='none', 1800);
+  }
 }
 
-function closePopup(){
-    document.getElementById("popup").style.display="none";
-    document.getElementById("cakeContainer").style.display="block";
-    document.getElementById("mainPage").style.display="block";
-    birthdaySong.play();
+function showWelcome(){
+  // show popup and blur page behind
+  document.getElementById('welcomePopup').style.display = 'block';
+  document.getElementById('pageWrap').classList.add('blurred');
+}
+function closeWelcome(){
+  document.getElementById('welcomePopup').style.display = 'none';
+  document.getElementById('pageWrap').classList.remove('blurred');
+
+  // show cake + main content
+  document.getElementById('cakeContainer').style.display = 'block';
+  document.getElementById('mainPage').style.display = 'block';
+
+  // start music (best-effort; some browsers may require gesture)
+  birthdaySong.currentTime = 0;
+  birthdaySong.play().catch(()=>{ /* ignore autoplay block */ });
+  
+  // small confetti (light)
+  spawnConfetti(26);
 }
 
+/* ---------- Confetti helper ---------- */
+function spawnConfetti(count){
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'floatPlus';
+    el.style.left = (40 + Math.random()*20) + "%";
+    el.style.top = "30%";
+    el.style.fontSize = (10 + Math.random()*14) + "px";
+    el.innerHTML = "🎉";
+    document.body.appendChild(el);
+    setTimeout(()=> el.remove(), 1200);
+  }
+}
+
+/* ---------- Hug ---------- */
 function hug(){
-    let msg = document.getElementById("hugMessage");
-    msg.style.display = "block";
+  // show hug text
+  const out = document.getElementById('hugMessage');
+  out.style.display = 'block';
 
-    for(let i=0; i<3; i++){
-        let plus = document.createElement("div");
-        plus.className = "floatPlus";
-        plus.innerHTML = "+❤️";
-        plus.style.left = (50 + (Math.random()*40-20)) + "%";
-        plus.style.top = "-10px";
-        msg.appendChild(plus);
-
-        setTimeout(()=>plus.remove(),900);
-    }
+  // create 3 floating little +hearts
+  for(let i=0;i<3;i++){
+    const f = document.createElement('div');
+    f.className = 'floatPlus';
+    f.innerText = "+❤️";
+    // position inside the card: random near center
+    const card = out.parentElement;
+    const rect = card.getBoundingClientRect();
+    // place absolute relative to viewport; style will use absolute and animation will move up
+    f.style.left = (rect.left + rect.width/2 + (Math.random()*40-20)) + "px";
+    f.style.top = (rect.top + 20 + (i*4)) + "px";
+    document.body.appendChild(f);
+    setTimeout(()=> f.remove(), 1000);
+  }
 }
-</script>
 
+/* ---------- Notes Panel (slide in) ---------- */
+let notesOpen = false;
+function toggleNotes(){
+  const panel = document.getElementById('notesPanel');
+  notesOpen = !notesOpen;
+  if(notesOpen){
+    panel.classList.add('open');
+    document.getElementById('pageWrap').classList.add('blurred');
+    panel.setAttribute('aria-hidden','false');
+    // load first note
+    selectNote(0);
+  } else {
+    panel.classList.remove('open');
+    document.getElementById('pageWrap').classList.remove('blurred');
+    panel.setAttribute('aria-hidden','true');
+  }
+}
+
+/* Typing animation for notes */
+let typingTimer = null;
+function selectNote(index){
+  // set active button styles
+  document.getElementById('n1').classList.toggle('active', index===0);
+  document.getElementById('n2').classList.toggle('active', index===1);
+  document.getElementById('n3').classList.toggle('active', index===2);
+
+  // stop any ongoing typing
+  clearInterval(typingTimer);
+  const target = document.getElementById('noteText');
+  target.innerHTML = ""; // clear
+  // soft typing effect
+  const txt = NOTES[index];
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+  target.appendChild(cursor);
+
+  typingTimer = setInterval(()=>{
+    if(i < txt.length){
+      // insert character before cursor
+      cursor.insertAdjacentText('beforebegin', txt[i]);
+      i++;
+    } else {
+      clearInterval(typingTimer);
+      // remove cursor after small delay
+      setTimeout(()=> cursor.remove(), 400);
+    }
+  }, 26); // slow, readable
+}
+
+/* ---------- Secret unlock ---------- */
+function trySecret(){
+  const v = document.getElementById('secretInput').value.trim();
+  if(v === "<?php /* do not run */ ?>19" || v === "19"){ /* safety: accept literal 19 only */
+    document.getElementById('secretOut').style.display = 'block';
+    spawnConfetti(20);
+  } else {
+    // quick shake or feedback
+    const inp = document.getElementById('secretInput');
+    inp.style.border = "1px solid #f66";
+    setTimeout(()=> inp.style.border = "1px solid #ffdce8", 900);
+  }
+}
+
+/* Accessibility: close notes with Esc */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(notesOpen) toggleNotes();
+    const popup = document.getElementById('welcomePopup');
+    if(popup.style.display === 'block') {
+      closeWelcome();
+    }
+  }
+});
+</script>
 </body>
 </html>
-
